@@ -5,12 +5,12 @@ function initialize_forseti_services() {
     # Reference all required bash variables prior to running. Due to 'nounset', if
     # a caller fails to export the following expected environmental variables, this
     # script will fail immediately rather than partially succeeding.
-    echo "Cloud SQL Instance Connection string: ${SQL_INSTANCE_CONN_STRING}"
-    echo "SQL port: ${SQL_PORT}"
-    echo "Forseti DB name: ${FORSETI_DB_NAME}"
+    echo "Cloud SQL Instance Connection string: $${SQL_INSTANCE_CONN_STRING}"
+    echo "SQL port: $${SQL_PORT}"
+    echo "Forseti DB name: $${FORSETI_DB_NAME}"
 
     if ! [[ -f $FORSETI_SERVER_CONF ]]; then
-        echo "Could not find the configuration file: ${FORSETI_SERVER_CONF}." >&2
+        echo "Could not find the configuration file: $${FORSETI_SERVER_CONF}." >&2
         exit 1
     fi
 
@@ -18,16 +18,16 @@ function initialize_forseti_services() {
     # resolved in the future, we should create a forseti db user instead of using
     # root.
     # https://github.com/GoogleCloudPlatform/forseti-security/issues/921
-    SQL_SERVER_LOCAL_ADDRESS="mysql://root@127.0.0.1:${SQL_PORT}"
+    SQL_SERVER_LOCAL_ADDRESS="mysql://root@127.0.0.1:$${SQL_PORT}"
     FORSETI_SERVICES="explain inventory model scanner notifier"
 
     FORSETI_COMMAND="$(which forseti_server) --endpoint '[::]:50051'"
-    FORSETI_COMMAND+=" --forseti_db ${SQL_SERVER_LOCAL_ADDRESS}/${FORSETI_DB_NAME}?charset=utf8"
-    FORSETI_COMMAND+=" --config_file_path ${FORSETI_SERVER_CONF}"
-    FORSETI_COMMAND+=" --services ${FORSETI_SERVICES}"
+    FORSETI_COMMAND+=" --forseti_db $${SQL_SERVER_LOCAL_ADDRESS}/$${FORSETI_DB_NAME}?charset=utf8"
+    FORSETI_COMMAND+=" --config_file_path $${FORSETI_SERVER_CONF}"
+    FORSETI_COMMAND+=" --services $${FORSETI_SERVICES}"
 
     SQL_PROXY_COMMAND="$(which cloud_sql_proxy)"
-    SQL_PROXY_COMMAND+=" -instances=${SQL_INSTANCE_CONN_STRING}=tcp:${SQL_PORT}"
+    SQL_PROXY_COMMAND+=" -instances=$${SQL_INSTANCE_CONN_STRING}=tcp:$${SQL_PORT}"
 
     # Cannot use "read -d" since it returns a nonzero exit status.
     API_SERVICE="$(
