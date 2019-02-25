@@ -18,22 +18,21 @@
 # Locals #
 #--------#
 locals {
-  random_hash                 = "${var.suffix}"
-  root_resource_id            = "${var.folder_id != "" ? "folders/${var.folder_id}" : "organizations/${var.org_id}"}"
-  network_project             = "${var.network_project != "" ? var.network_project : var.project_id}"
-  server_zone                 = "${var.server_region}-c"
-  server_startup_script       = "${file("${path.module}/templates/scripts/forseti-server/forseti_server_startup_script.sh.tpl")}"
-  server_environment          = "${file("${path.module}/templates/scripts/forseti-server/forseti_environment.sh.tpl")}"
-  cloudsql_proxy_service_conf = "${file("${path.module}/templates/configs/cloudsqlproxy.service.tpl")}"
-  server_env                  = "${file("${path.module}/templates/scripts/forseti-server/forseti_env.sh.tpl")}"
-  server_conf                 = "${file("${path.module}/templates/configs/forseti_conf_server.yaml.tpl")}"
-  server_conf_path            = "${var.forseti_home}/configs/forseti_conf_server.yaml"
-  server_name                 = "forseti-server-vm-${local.random_hash}"
-  server_sa_name              = "forseti-server-gcp-${local.random_hash}"
-  cloudsql_name               = "forseti-server-db-${local.random_hash}"
-  storage_bucket_name         = "forseti-server-${local.random_hash}"
-  storage_cai_bucket_name     = "forseti-cai-export-${local.random_hash}"
-  server_bucket_name          = "forseti-server-${local.random_hash}"
+  random_hash             = "${var.suffix}"
+  root_resource_id        = "${var.folder_id != "" ? "folders/${var.folder_id}" : "organizations/${var.org_id}"}"
+  network_project         = "${var.network_project != "" ? var.network_project : var.project_id}"
+  server_zone             = "${var.server_region}-c"
+  server_startup_script   = "${file("${path.module}/templates/scripts/forseti-server/forseti_server_startup_script.sh.tpl")}"
+  server_environment      = "${file("${path.module}/templates/scripts/forseti-server/forseti_environment.sh.tpl")}"
+  server_env              = "${file("${path.module}/templates/scripts/forseti-server/forseti_env.sh.tpl")}"
+  server_conf             = "${file("${path.module}/templates/configs/forseti_conf_server.yaml.tpl")}"
+  server_conf_path        = "${var.forseti_home}/configs/forseti_conf_server.yaml"
+  server_name             = "forseti-server-vm-${local.random_hash}"
+  server_sa_name          = "forseti-server-gcp-${local.random_hash}"
+  cloudsql_name           = "forseti-server-db-${local.random_hash}"
+  storage_bucket_name     = "forseti-server-${local.random_hash}"
+  storage_cai_bucket_name = "forseti-cai-export-${local.random_hash}"
+  server_bucket_name      = "forseti-server-${local.random_hash}"
 
   server_project_roles = [
     "roles/storage.objectViewer",
@@ -73,16 +72,14 @@ data "template_file" "forseti_server_startup_script" {
   template = "${local.server_startup_script}"
 
   vars {
-    forseti_environment      = "${data.template_file.forseti_server_environment.rendered}"
-    forseti_env              = "${data.template_file.forseti_server_env.rendered}"
-    forseti_run_frequency    = "${var.forseti_run_frequency}"
-    forseti_repo_url         = "${var.forseti_repo_url}"
-    forseti_version          = "${var.forseti_version}"
-    forseti_server_conf_path = "${local.server_conf_path}"
-    forseti_home             = "${var.forseti_home}"
-    cloudsql_proxy_arch      = "${var.cloudsql_proxy_arch}"
-
-    # cloudsql_instance_connection_name = "${google_sql_database_instance.master.connection_name}"
+    forseti_environment          = "${data.template_file.forseti_server_environment.rendered}"
+    forseti_env                  = "${data.template_file.forseti_server_env.rendered}"
+    forseti_run_frequency        = "${var.forseti_run_frequency}"
+    forseti_repo_url             = "${var.forseti_repo_url}"
+    forseti_version              = "${var.forseti_version}"
+    forseti_server_conf_path     = "${local.server_conf_path}"
+    forseti_home                 = "${var.forseti_home}"
+    cloudsql_proxy_arch          = "${var.cloudsql_proxy_arch}"
     storage_bucket_name          = "${local.server_bucket_name}"
     forseti_conf_server_checksum = "${base64sha256(data.template_file.forseti_server_config.rendered)}"
   }
