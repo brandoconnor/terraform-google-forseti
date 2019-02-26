@@ -72,6 +72,7 @@ $SQL_PROXY_COMMAND &&
 $FORSETI_COMMAND
 EOF
     )"
+    systemctl daemon-reload
     echo "$FOREGROUND_RUNNER" >/tmp/forseti-foreground.sh
     chmod 755 /tmp/forseti-foreground.sh
     sudo mv /tmp/forseti-foreground.sh /usr/bin/forseti-foreground.sh
