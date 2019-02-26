@@ -405,6 +405,8 @@ resource "google_compute_instance" "forseti-server" {
 #----------------------#
 # Forseti SQL database #
 #----------------------#
+# XXX expose only to private network
+#XXX domain wide delegation done by hand
 resource "google_sql_database_instance" "master" {
   name             = "${local.cloudsql_name}"
   project          = "${var.project_id}"

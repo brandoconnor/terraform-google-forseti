@@ -36,7 +36,7 @@ function initialize_forseti_services() {
 Description=Forseti API Server
 Wants=cloudsqlproxy.service
 [Service]
-User=ubuntu
+User=$USER
 Restart=always
 RestartSec=3
 ExecStart=$FORSETI_COMMAND
@@ -138,7 +138,7 @@ pip install -q --upgrade -r requirements.txt
 
 # Setup Forseti logging
 touch /var/log/forseti.log
-chown ubuntu:root /var/log/forseti.log
+chown $USER:root /var/log/forseti.log
 cp ${forseti_home}/configs/logging/fluentd/forseti.conf /etc/google-fluentd/config.d/forseti.conf
 cp ${forseti_home}/configs/logging/logrotate/forseti /etc/logrotate.d/forseti
 chmod 644 /etc/logrotate.d/forseti
@@ -189,7 +189,6 @@ EOF
 )"
 echo "$FORSETI_ENV" >$USER_HOME/forseti_env.sh
 
-USER=ubuntu
 # Use flock to prevent rerun of the same cron job when the previous job is still running.
 # If the lock file does not exist under the tmp directory, it will create the file and put a lock on top of the file.
 # When the previous cron job is not finished and the new one is trying to run, it will attempt to acquire the lock
@@ -204,5 +203,6 @@ if [ -f ${forseti_home}/forseti_cron_runner.lock ]; then
     echo "removed stale lock file"
     rm ${forseti_home}/forseti_cron_runner.lock
 fi
+chown -R $USER: ${USER_HOME}
 
 echo "Execution of startup script finished"
