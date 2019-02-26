@@ -199,4 +199,10 @@ USER=ubuntu
 # If the cron job failed the acquire lock on the process, it will log a warning message to syslog.
 (echo "${forseti_run_frequency} (/usr/bin/flock -n ${forseti_home}/forseti_cron_runner.lock ${forseti_home}/install/gcp/scripts/run_forseti.sh -b ${storage_bucket_name} || echo '[forseti-security] Warning: New Forseti cron job will not be started, because previous Forseti job is still running.') 2>&1 | logger") | crontab -u $USER -
 echo "Added the run_forseti.sh to crontab under user $USER"
+
+if [ -f ${forseti_home}/forseti_cron_runner.lock ]; then
+    echo "removed stale lock file"
+    rm ${forseti_home}/forseti_cron_runner.lock
+fi
+
 echo "Execution of startup script finished"

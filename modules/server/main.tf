@@ -41,6 +41,7 @@ locals {
     "roles/cloudtrace.agent",
     "roles/logging.logWriter",
     "roles/iam.serviceAccountTokenCreator",
+    "roles/securitycenter.findingsEditor",
   ]
 
   server_write_roles = [
