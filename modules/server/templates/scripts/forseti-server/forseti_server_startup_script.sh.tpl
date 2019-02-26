@@ -203,6 +203,6 @@ if [ -f ${forseti_home}/forseti_cron_runner.lock ]; then
     echo "removed stale lock file"
     rm ${forseti_home}/forseti_cron_runner.lock
 fi
-chown -R $USER: ${USER_HOME}
+chown -R $USER: $USER_HOME
 
 echo "Execution of startup script finished"
