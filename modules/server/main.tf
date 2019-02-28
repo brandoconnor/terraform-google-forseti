@@ -307,7 +307,7 @@ resource "google_compute_firewall" "forseti-server-allow-grpc" {
   project                 = "${local.network_project}"
   network                 = "${var.network}"
   target_service_accounts = ["${google_service_account.forseti_server.email}"]
-  source_ranges           = ["10.128.0.0/9"]
+  source_ranges           = "${var.source_ranges}"
   priority                = "100"
 
   allow {
@@ -344,10 +344,11 @@ module "server_rules" {
 }
 
 resource "google_storage_bucket" "cai_export" {
-  count    = "${var.enable_cai_bucket ? 1 : 0}"
-  name     = "${local.storage_cai_bucket_name}"
-  location = "${var.bucket_cai_location}"
-  project  = "${var.project_id}"
+  count         = "${var.enable_cai_bucket ? 1 : 0}"
+  name          = "${local.storage_cai_bucket_name}"
+  location      = "${var.bucket_cai_location}"
+  project       = "${var.project_id}"
+  force_destroy = "true"
 
   lifecycle_rule = {
     action = {
