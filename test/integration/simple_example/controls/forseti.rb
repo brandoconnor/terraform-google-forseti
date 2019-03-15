@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+org_id = attribute('org_id')
 project_id = attribute('project_id')
 forseti_client_vm_name = attribute('forseti-client-vm-name')
 forseti_server_vm_name = attribute('forseti-server-vm-name')
@@ -80,7 +81,10 @@ control 'forseti' do
   end
 
   describe google_storage_bucket_objects(bucket: forseti_server_storage_bucket) do
-    let(:files) do
+
+    # Enumerate the files that we expect to be present. This fixture ensures that we
+    # don't silently drop a rules file.
+    let(:expected_files) do
       %w[
         rules/audit_logging_rules.yaml
         rules/bigquery_rules.yaml
@@ -105,6 +109,18 @@ control 'forseti' do
         rules/service_account_key_rules.yaml
       ]
     end
+
+    # Enumerate the files that are present in the rules directory  This fixture ensures
+    # that we don't miss an included rules file.
+    let(:present_files) do
+      template_dir = File.expand_path(
+        "../../../../modules/rules/templates/rules",
+        __dir__
+      )
+      Dir.glob("#{template_dir}/*.yaml").map {|file| "rules/#{File.basename(file)}" }
+    end
+
+    let(:files) { expected_files | present_files }
 
     its('object_names') { should include(*files) }
   end
@@ -134,7 +150,6 @@ control 'forseti' do
       its('allowed_https?') { should be false }
       its('allowed_http?') { should be false }
       its('priority') { should eq 100 }
-      its('source_ranges') { should eq ["0.0.0.0/0"] }
       it { should_not allow_port_protocol("21", "tcp") }
       it { should_not allow_port_protocol("8080", "tcp") }
     end
@@ -170,5 +185,36 @@ control 'forseti' do
       end
     end
   end
+end
 
+control 'forseti-org-iam' do
+  title "Validate organization roles of SA"
+  describe command("gcloud organizations get-iam-policy #{org_id} --filter='bindings.members:#{forseti_server_service_account}' --flatten='bindings[].members' --format='json(bindings.role)'") do
+    its(:exit_status) { should eq 0 }
+    its(:stderr) { should eq '' }
+
+    let(:sa_roles) do
+      JSON.parse(subject.stdout).map { |a| a["bindings"]["role"] }
+    end
+
+    let(:expected_roles) do
+      [
+        "roles/appengine.appViewer",
+        "roles/bigquery.dataViewer",
+        "roles/bigquery.metadataViewer",
+        "roles/browser",
+        "roles/cloudasset.viewer",
+        "roles/cloudsql.viewer",
+        "roles/compute.networkViewer",
+        "roles/iam.securityReviewer",
+        "roles/orgpolicy.policyViewer",
+        "roles/servicemanagement.quotaViewer",
+        "roles/serviceusage.serviceUsageConsumer",
+      ]
+    end
+
+    it 'has all expected org roles' do
+      expect(sa_roles).to match_array(expected_roles)
+    end
+  end
 end
