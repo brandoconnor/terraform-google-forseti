@@ -22,7 +22,7 @@ locals {
   root_resource_id        = "${var.folder_id != "" ? "folders/${var.folder_id}" : "organizations/${var.org_id}"}"
   network_project         = "${var.network_project != "" ? var.network_project : var.project_id}"
   server_zone             = "${var.server_region}-c"
-  server_startup_script   = "${file("${path.module}/templates/scripts/forseti-server/forseti_server_startup_script.sh.tpl")}"
+  server_startup_script   = "${file("${path.module}/templates/scripts/forseti-server/forseti_server_startup_script.sh.tpl.og")}"
   server_environment      = "${file("${path.module}/templates/scripts/forseti-server/forseti_environment.sh.tpl")}"
   server_env              = "${file("${path.module}/templates/scripts/forseti-server/forseti_env.sh.tpl")}"
   server_conf             = "${file("${path.module}/templates/configs/forseti_conf_server.yaml.tpl")}"
