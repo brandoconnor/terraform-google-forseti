@@ -63,7 +63,7 @@ cp test/fixtures/simple_example/terraform.tfvars.example test/fixtures/simple_ex
 Update `terraform.tfvars` to match your environment:
 
 ```bash
-credentials_path = "../../../credentials.json"`
+credentials_path = "../../../credentials.json"
 gsuite_admin_email = "admin@example.com"
 org_id = "000000000000"
 project_id = "forseti-test-f6bd"

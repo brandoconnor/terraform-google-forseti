@@ -18,7 +18,7 @@
 DELETE_AT_EXIT="$(mktemp -d)"
 finish() {
   echo 'BEGIN: finish() trap handler' >&2
-  kitchen destroy
+  kitchen destroy simple-example
   [[ -d "${DELETE_AT_EXIT}" ]] && rm -rf "${DELETE_AT_EXIT}"
   echo 'END: finish() trap handler' >&2
 }
@@ -29,7 +29,7 @@ finish() {
 setup_environment() {
   local tmpfile
   tmpfile="$(mktemp)"
-  echo "${SERVICE_ACCOUNT_JSON}" > "${tmpfile}"
+  echo "${SERVICE_ACCOUNT_JSON}" >"${tmpfile}"
 
   # gcloud variables
   export CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE="${tmpfile}"
@@ -58,9 +58,9 @@ main() {
   set -x
 
   # Execute the test lifecycle
-  kitchen create
-  kitchen converge
-  kitchen verify
+  kitchen create simple-example
+  kitchen converge simple-example
+  kitchen verify simple-example
 }
 
 # if script is being executed and not sourced.
